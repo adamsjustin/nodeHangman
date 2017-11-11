@@ -2,7 +2,6 @@ var inquirer = require('inquirer');
 var fs = require('fs');
 var wordArray = [];
 var arrayNumber;
-var wordToGuess;
 var word;
 var underscoreArray = [];
 var guessesLeft = 10;
@@ -14,29 +13,33 @@ var questions = [{
 }]
 var correct;
 var turn = false;
+
 function inquiry() {
     inquirer.prompt(questions).then(function (answers) {
-        answers.guess = new Letter(answers.guess);
+        answers.guess = new Letter( answers.guess);
         answers.guess.checkCorrect();
         answers.guess.checkEnd();
     });
 }
+
 function Hangman() {
     fs.readFile('words.txt', 'utf8', function (err, data) {
         wordArray = data.split(',');
         if (err) throw err;
         //console.log(wordArray);
-    arrayNumber = Math.floor((Math.random() * wordArray.length));
-    //console.log(arrayNumber);
-    word = new Word(wordArray[arrayNumber], []);
-    //console.log(word.array);
-    word.letters(word.array);
-    // console.log(underscores);
-    correct = word.array.length;
-    console.log(correct);
-    inquiry();
+        arrayNumber = Math.floor((Math.random() * wordArray.length));
+        //console.log(arrayNumber);
+        var chosenWord = wordArray[arrayNumber].toLowerCase();
+        word = new Word(chosenWord, []);
+        //console.log(word.array);
+        word.letters(word.array);
+        // console.log(underscores);
+        correct = word.array.length;
+        console.log(correct);
+        inquiry();
     });
 }
+
 function Word(primary, array, letters, questions) {
     this.primary = primary;
     this.array = primary.split('');
@@ -46,7 +49,7 @@ function Word(primary, array, letters, questions) {
         for (i = 0; i < array.length; i++) {
             underscoreArray.push('_ ');
         }
-        
+
         console.log(underscoreArray);
     }
 };
@@ -60,34 +63,38 @@ function Letter(guess, checkCorrect) {
                 turn = true;
             }
         }
-        if(turn) {
+        if (turn) {
             correct--;
             turn = false;
-        }else{
+        } else {
             guessesLeft--;
         }
         console.log(underscoreArray);
         console.log('Left: ' + guessesLeft);
         console.log(correct)
-        
+
     }
-    this.checkEnd = function() {
-        if (correct === 1){
+    this.checkEnd = function () {
+        if (correct === 0) {
+            guessesLeft = 10;
             underscoreArray = [];
             console.log('You Win!')
             game();
             return;
-    }   
-    if ( guessesLeft === 0 ) {
-        console.log('You losed!')
-        game();
-        return;
+        }
+        if (guessesLeft === 0) {
+            guessesLeft = 10;
+            underscoreArray = [];
+            console.log('You losed!')
+            game();
+            return;
+        }
+        inquiry();
     }
-    inquiry();
-}    
 };
+
 function game() {
-    
+
     Hangman();
 }
 game();
