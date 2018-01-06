@@ -11,17 +11,21 @@ var questions = [{
     name: 'guess',
     message: 'Guess a Letter! '
 }]
-var correct;
+var remainingLetters;
 var turn = false;
 
+correct
+
+//Function to ask question
 function inquiry() {
     inquirer.prompt(questions).then(function (answers) {
-        answers.guess = new Letter( answers.guess);
+        answers.guess = new Letter(answers.guess);
         answers.guess.checkCorrect();
         answers.guess.checkEnd();
     });
 }
 
+// Game function
 function Hangman() {
     fs.readFile('words.txt', 'utf8', function (err, data) {
         wordArray = data.split(',');
@@ -34,12 +38,13 @@ function Hangman() {
         //console.log(word.array);
         word.letters(word.array);
         // console.log(underscores);
-        correct = word.array.length;
-        console.log(correct);
+        remainingLetters = word.array.length;
+        console.log(remainingLetters);
         inquiry();
     });
 }
 
+//Word Construction for the Word to Guess
 function Word(primary, array, letters, questions) {
     this.primary = primary;
     this.array = primary.split('');
@@ -53,6 +58,8 @@ function Word(primary, array, letters, questions) {
         console.log(underscoreArray);
     }
 };
+
+//Letter Construction for my Guess
 //inquirer(questions, callback);
 function Letter(guess, checkCorrect) {
     this.guess = guess
@@ -64,18 +71,18 @@ function Letter(guess, checkCorrect) {
             }
         }
         if (turn) {
-            correct--;
+            remainingLetters--;
             turn = false;
         } else {
             guessesLeft--;
         }
         console.log(underscoreArray);
         console.log('Left: ' + guessesLeft);
-        console.log(correct)
+        console.log(remainingLetters)
 
     }
     this.checkEnd = function () {
-        if (correct === 0) {
+        if (remainingLetters === 0) {
             guessesLeft = 10;
             underscoreArray = [];
             console.log('You Win!')
